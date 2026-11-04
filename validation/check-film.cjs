@@ -1,0 +1,8 @@
+const path=require('path');const fs=require('fs');
+const {bundle}=require('@remotion/bundler');
+const {openBrowser,selectComposition,renderStill}=require('@remotion/renderer');
+(async()=>{const serveUrl=await bundle({entryPoint:path.resolve('src/index.ts'),onProgress:()=>{}});const browser=await openBrowser('chrome',{browserExecutable:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',chromiumOptions:{gl:'angle'}});const logs=[];const onBrowserLog=l=>{if(l.type==='error'||l.type==='warning')logs.push(l)};
+const composition=await selectComposition({serveUrl,id:'XELA-Opening',puppeteerInstance:browser,onBrowserLog});
+const frames=process.argv.slice(2).map(Number);const points=frames.length?frames:[0,53,54,74,75,154,158,164,165,185,220,235,239,240,270,300,308,314,315,345,370,374,378,382,389,390,405,430,462,479,480,490,510,524,525,532,540,570,584,599,600,615,630,645,659];
+for(let i=0;i<points.length;i+=2){await Promise.all(points.slice(i,i+2).map(async frame=>{await renderStill({serveUrl,composition,frame,output:path.resolve(`validation/frame-${String(frame).padStart(3,'0')}.png`),imageFormat:'png',scale:.5,puppeteerInstance:browser,onBrowserLog});console.log('Verified frame',frame)}))}
+fs.writeFileSync('validation/report.json',JSON.stringify({composition:{id:composition.id,durationInFrames:composition.durationInFrames,fps:composition.fps,width:composition.width,height:composition.height},frames:points,logs},null,2));await browser.close({silent:true});if(logs.length)console.log('Browser logs',JSON.stringify(logs));console.log('Validation complete');})().catch(e=>{console.error(e);process.exit(1)});

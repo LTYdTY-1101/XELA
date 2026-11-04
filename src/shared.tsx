@@ -1,0 +1,6 @@
+import React from 'react';
+import {AbsoluteFill,Img,staticFile,interpolate,Easing,useCurrentFrame} from 'remotion';
+export type Settings={backgroundImage:string;backgroundFit:'cover'|'contain';backgroundColor:string;showCaptions:boolean};
+export const motion=(f:number,a:number,b:number,x:number,y:number)=>interpolate(f,[a,b],[x,y],{extrapolateLeft:'clamp',extrapolateRight:'clamp',easing:Easing.bezier(.22,.75,.25,1)});
+export const Background=({backgroundImage,backgroundFit,backgroundColor}:Settings)=><AbsoluteFill style={{backgroundColor}}>{backgroundImage&&<Img src={/^(https?:|data:|blob:)/.test(backgroundImage)?backgroundImage:staticFile(backgroundImage)} style={{width:'100%',height:'100%',objectFit:backgroundFit}}/>}</AbsoluteFill>;
+export const Caption=({children,show=true}:{children:React.ReactNode;show?:boolean})=>{const f=useCurrentFrame();return show?<div style={{position:'absolute',bottom:46,left:0,width:'100%',textAlign:'center',fontFamily:'PingFang SC, sans-serif',fontSize:32,fontWeight:500,letterSpacing:3,color:'#282b43',opacity:motion(f,4,13,0,1)}}><span style={{background:'rgba(255,255,255,.70)',padding:'14px 30px',borderRadius:40,boxShadow:'0 4px 30px #5854a008'}}>{children}</span></div>:null};

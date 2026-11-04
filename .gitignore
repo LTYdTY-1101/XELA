@@ -1,0 +1,12 @@
+node_modules/
+out/
+.remotion/
+.cache/
+.local/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+validation/*
+!validation/check-film.cjs
